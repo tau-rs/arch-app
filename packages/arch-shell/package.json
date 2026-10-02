@@ -1,0 +1,33 @@
+{
+  "name": "@tau-rs/arch-shell",
+  "version": "0.0.0",
+  "description": "arch · the frame: one bar, the rail, left pane, center, inspector, bottom panel, status bar; scope and Focus/Lock logic. Every visual element comes from @tau-rs/sett.",
+  "license": "MIT",
+  "keywords": [
+    "theia-extension"
+  ],
+  "files": [
+    "lib",
+    "src"
+  ],
+  "dependencies": {
+    "@theia/core": "1.76.0",
+    "@theia/markers": "1.76.0"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "~5.9.3"
+  },
+  "scripts": {
+    "prepare": "npm run clean && npm run build",
+    "clean": "rimraf lib",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "node --test --test-reporter=spec lib/**/*.spec.js"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/arch-shell-frontend-module"
+    }
+  ]
+}

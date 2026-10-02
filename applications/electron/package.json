@@ -1,0 +1,46 @@
+{
+  "private": true,
+  "name": "arch-electron-app",
+  "version": "0.0.0",
+  "description": "arch · Theia electron target: the desktop product; spawns arch serve; keychain through Theia's secret storage",
+  "productName": "arch",
+  "license": "MIT",
+  "main": "lib/backend/electron-main.js",
+  "dependencies": {
+    "@tau-rs/arch-shell": "0.0.0",
+    "@theia/core": "1.76.0",
+    "@theia/editor": "1.76.0",
+    "@theia/electron": "1.76.0",
+    "@theia/filesystem": "1.76.0",
+    "@theia/markers": "1.76.0",
+    "@theia/messages": "1.76.0",
+    "@theia/monaco": "1.76.0",
+    "@theia/preferences": "1.76.0",
+    "@theia/process": "1.76.0",
+    "@theia/terminal": "1.76.0",
+    "@theia/workspace": "1.76.0"
+  },
+  "devDependencies": {
+    "@theia/cli": "1.76.0",
+    "electron": "42.8.1"
+  },
+  "scripts": {
+    "bundle": "npm run rebuild && theia build --mode development",
+    "rebuild": "theia rebuild:electron --cacheRoot ../..",
+    "start": "theia start",
+    "watch": "npm run rebuild && theia build --watch --mode development"
+  },
+  "theia": {
+    "target": "electron",
+    "frontend": {
+      "config": {
+        "applicationName": "arch",
+        "reloadOnReconnect": true,
+        "electron": { "appUserModelId": "rs.tau.arch", "showWindowEarly": false }
+      }
+    },
+    "backend": {
+      "config": { "frontendConnectionTimeout": -1, "startupTimeout": -1 }
+    }
+  }
+}

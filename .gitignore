@@ -1,0 +1,19 @@
+node_modules/
+lib/
+*.tsbuildinfo
+# Theia build outputs
+applications/*/src-gen/
+applications/*/lib/
+applications/*/gen-esbuild.*.mjs
+
+applications/*/.theia/
+applications/*/dist/
+applications/*/plugins/
+.browser_modules/
+# synced external inputs (pinned by lock files)
+packages/arch-fixtures-loader/fixtures-for-ui/
+packages/arch-client/schema/arch-api.json
+# tests
+test-results/
+playwright-report/
+.context/
