@@ -1,0 +1,32 @@
+{
+  "name": "@tau-rs/arch-fixtures-loader",
+  "version": "0.0.0",
+  "description": "arch · pins and loads arch-fixtures/fixtures-for-ui; one responder that answers JSON-RPC from fixture files, as an in-page transport (Storybook, tests) and as a fake engine on a socket (Theia dev, engine-host tests)",
+  "license": "MIT",
+  "files": [
+    "lib",
+    "src",
+    "bin",
+    "fixtures.lock.json"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "bin": {
+    "arch-fake-engine": "bin/arch-fake-engine.mjs"
+  },
+  "scripts": {
+    "fixtures:sync": "node ../../scripts/sync-pinned.mjs fixtures.lock.json fixtures-for-ui --kind folder",
+    "clean": "rimraf lib",
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
+    "test": "node --test --test-reporter=spec lib/**/*.spec.js"
+  },
+  "dependencies": {
+    "@tau-rs/arch-client": "0.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "~5.9.3"
+  }
+}
