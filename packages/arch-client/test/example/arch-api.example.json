@@ -1,0 +1,24 @@
+{
+  "openrpc": "1.3.2",
+  "info": { "title": "example-api", "version": "0.1", "description": "A neutral example for the generator's tests. Not arch's API." },
+  "methods": [
+    { "name": "ping", "params": [], "result": { "name": "pong", "schema": { "type": "string" } } },
+    {
+      "name": "clock.set",
+      "params": [
+        { "name": "at", "required": true, "schema": { "type": "integer" } },
+        { "name": "label", "schema": { "$ref": "#/components/schemas/Label" } }
+      ],
+      "result": { "name": "clock", "schema": { "$ref": "#/components/schemas/Clock" } }
+    }
+  ],
+  "x-arch-events": [
+    { "name": "tick", "payload": { "type": "object", "properties": { "at": { "type": "integer" } }, "required": ["at"] } }
+  ],
+  "components": {
+    "schemas": {
+      "Label": { "type": "string", "minLength": 1 },
+      "Clock": { "type": "object", "properties": { "at": { "type": "integer" }, "label": { "$ref": "#/components/schemas/Label" } }, "required": ["at"], "additionalProperties": false }
+    }
+  }
+}
