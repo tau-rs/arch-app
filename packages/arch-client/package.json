@@ -3,15 +3,18 @@
   "version": "0.0.0",
   "description": "arch · the API client, generated from arch's published OpenRPC schema; the only coupling with the engine. Hand-written: the transport port and JSON-RPC framing, never a method.",
   "license": "MIT",
-  "files": ["lib", "src", "schema"],
+  "files": [
+    "lib",
+    "src",
+    "schema"
+  ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "schema:sync": "node ../../scripts/sync-pinned.mjs schema/schema.lock.json schema/arch-api.json --kind file",
     "generate": "node scripts/generate.mjs",
-    "prepare": "npm run clean && npm run generate && npm run build",
     "clean": "rimraf lib",
-    "build": "tsc",
+    "build": "npm run clean && npm run generate && tsc",
     "watch": "tsc -w",
     "test": "node --test --test-reporter=spec lib/**/*.spec.js scripts/*.spec.mjs && node scripts/generate.mjs --check"
   },

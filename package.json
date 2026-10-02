@@ -13,7 +13,7 @@
     "applications/*"
   ],
   "scripts": {
-    "prepare": "lerna run prepare",
+    "prepare": "lerna run build",
     "postinstall": "theia check:theia-version",
     "build": "lerna run build",
     "build:browser": "npm --prefix applications/browser run bundle",

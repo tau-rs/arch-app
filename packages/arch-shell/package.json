@@ -19,9 +19,8 @@
     "typescript": "~5.9.3"
   },
   "scripts": {
-    "prepare": "npm run clean && npm run build",
     "clean": "rimraf lib",
-    "build": "tsc",
+    "build": "npm run clean && tsc",
     "watch": "tsc -w",
     "test": "node --test --test-reporter=spec lib/**/*.spec.js"
   },
