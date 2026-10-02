@@ -16,3 +16,12 @@ test('the shell has the four host regions and no stock Theia views', async ({ pa
         await expect(page.locator(stock)).toHaveCount(0);
     }
 });
+
+// Issue #2 done criterion: with no `arch` binary anywhere, the app starts and says so in the status bar.
+test('without an engine binary the status bar reads "engine · not found" and nothing blocks', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#theia-app-shell')).toBeVisible();
+    const item = page.locator('#theia-statusBar').getByText('engine · not found');
+    await expect(item).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('.theia-dialog-container, .theia-notification-list .theia-notification-list-item')).toHaveCount(0);
+});

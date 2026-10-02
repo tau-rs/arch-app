@@ -3,6 +3,7 @@
 // convention, so the Theia backend can spawn it exactly as it will spawn the real engine.
 //
 //   arch-fake-engine serve [--state <dir>] [--socket <path>] [--repo <root>]
+//   arch-fake-engine --version        prints `arch 0.0.0-fake`, the identity the host checks (F-8)
 //   default state: the first state under packages/arch-fixtures-loader/fixtures-for-ui, else the
 //   built-in example; default socket: socketPathFor(repo = cwd)
 import { dirname, join, resolve } from 'node:path';
@@ -18,6 +19,7 @@ const { socketPathFor } = require('@tau-rs/arch-client');
 const here = dirname(fileURLToPath(import.meta.url));
 const argv = process.argv.slice(2);
 const opt = (flag, dflt) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : dflt);
+if (argv[0] === '--version') { console.log('arch 0.0.0-fake'); process.exit(0); }
 if (argv[0] !== 'serve') { console.error('usage: arch-fake-engine serve [--state <dir>] [--socket <path>] [--repo <root>]'); process.exit(2); }
 
 const synced = join(here, '..', 'fixtures-for-ui');

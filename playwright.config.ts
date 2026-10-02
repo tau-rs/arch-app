@@ -8,7 +8,7 @@ export default defineConfig({
     reporter: process.env.CI ? 'github' : 'list',
     use: { baseURL: 'http://localhost:3000', trace: 'retain-on-failure' },
     webServer: {
-        command: 'npx theia start --port 3000 --hostname 127.0.0.1',
+        command: 'npx theia start --port 3000 --hostname 127.0.0.1 --root-dir=../..',  // the repo itself is the opened workspace
         cwd: 'applications/browser',
         url: 'http://127.0.0.1:3000',
         timeout: 120_000,
