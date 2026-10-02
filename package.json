@@ -1,0 +1,47 @@
+{
+  "private": true,
+  "name": "arch-app",
+  "version": "0.0.0",
+  "description": "arch · the Theia product: shell, map, views, editor decorations, API client",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24",
+    "npm": ">=10"
+  },
+  "workspaces": [
+    "packages/*",
+    "applications/*"
+  ],
+  "scripts": {
+    "prepare": "lerna run prepare",
+    "postinstall": "theia check:theia-version",
+    "build": "lerna run build",
+    "build:browser": "npm --prefix applications/browser run bundle",
+    "build:electron": "npm --prefix applications/electron run bundle",
+    "start:browser": "npm --prefix applications/browser start",
+    "start:electron": "npm --prefix applications/electron start",
+    "watch:browser": "lerna run --parallel watch --ignore arch-electron-app",
+    "watch:electron": "lerna run --parallel watch --ignore arch-browser-app",
+    "test": "lerna run test",
+    "lint": "lerna run lint",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "lerna": "^9.0.7",
+    "typescript": "~5.9.3",
+    "@playwright/test": "^1.58.0"
+  },
+  "allowScripts": {
+    "@parcel/watcher": true,
+    "@theia/ffmpeg": true,
+    "drivelist": true,
+    "esbuild": true,
+    "keytar": true,
+    "msgpackr-extract": true,
+    "native-keymap": true,
+    "node-pty": true,
+    "nx": false,
+    "puppeteer": false,
+    "fsevents": true
+  }
+}

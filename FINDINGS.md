@@ -1,0 +1,15 @@
+# Findings · `from:app`
+
+What `arch-app` needs from another repo, or has learned, that the other repo should act on. Each
+entry moves to `arch-design` as a `from:app` issue when that repo opens; the status then carries the
+link. Until `arch-design` publishes its ADRs, spec §13 decision *n* is cited as ADR *n*.
+
+| id | date | to | ask | blocks here | status |
+|---|---|---|---|---|---|
+| F-1 | 2026-10-03 | arch-design | sett DESIGN.md rule 12 shows rust-analyzer's hints in the editor pill. In Theia, rust-analyzer arrives as a VS Code extension, which needs `@theia/plugin-ext`; V1 has no plugin host (spec §8). Decide for milestone 3: a plugin host for that one extension, or a direct LSP client. | nothing before milestone 3 | open |
+| F-2 | 2026-10-03 | arch-app (watch) | Theia's left side tab bar shows vertical titles; spec §4 forbids icons alone and vertical text for the rail. The plan is a renderer rebind on the left `SidePanelHandler`'s tab bar to `sett-activity-rail`. Record here if it needs an upstream Theia hook. | shell composition (#5) | open |
+| F-3 | 2026-10-03 | arch | CLI contract for the engine host: `arch serve` run with the repo as cwd derives its own socket path from the repo root (runtime dir, per-user, hashed, < 104 chars); readiness = the socket accepts a connection and `initialize` answers `{ engineVersion, schemaVersion }`. | real spawn in the engine host (#2) | filed → tau-rs/arch#7 |
+| F-4 | 2026-10-03 | arch | Keep the API schema at `schemas/arch-api.json` beside `schemas/facts.schema.json`; arch-app pins it by repo path and commit, not by release asset. | `schema:sync` (#3) | filed → tau-rs/arch#7 |
+| F-5 | 2026-10-03 | arch | Schema format: OpenRPC 1.3 with an `x-arch-events` block (name, payload as JSON Schema), `info.version` as the schema version, an `initialize` method. | the generator's input (#3) | filed → tau-rs/arch#7 |
+| F-6 | 2026-10-03 | arch-fixtures | sett's stories and arch-app load the same `fixtures-for-ui/`; publishing it as a package would serve both. Until then arch-app sparse-syncs the folder by commit (script in `packages/arch-fixtures-loader`), which sett can copy. | nothing | open |
+| F-7 | 2026-10-03 | arch-fixtures | Proposed layout so the loader never invents data: `fixtures-for-ui/<state>/responses/<method>.json` (one result per OpenRPC method, `initialize.json` carrying the schema version the fixtures derive from) and `events.jsonl` (ordered notifications). States from the arch-fixtures handoff: session mid-run, plan being shaped, review with one remark, What's new list, gate failed, degraded crate. | the loader's lookup rules (#4) | open |
