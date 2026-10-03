@@ -30,6 +30,17 @@ export const REGION_ELEMENT: Readonly<Record<RegionName, string>> = {
     panel: 'sett-bottom-panel',
 };
 
+/** the centre: Theia's main area inside the one frame that says the state of the scope (rule 5); idle with no session */
+export const CENTRE_ELEMENT = 'sett-frame';
+
+/** the status bar (rule 8): the scope item first, then these entries of Theia's StatusBar service, by id */
+export const STATUS_ELEMENT = 'sett-status-bar';
+export const STATUS_ID = 'arch.status';
+export const STATUS_ITEMS: readonly string[] = ['arch.engine'];
+
+export const isPanelTab = (value: unknown): boolean =>
+    PANEL_TABS.some(t => t.value === value);
+
 /** the view under the scope line; sett v0.4.0 has no Findings view for the left pane (FINDINGS F-10) */
 export const LEFT_VIEW_ELEMENT: Readonly<Record<RailView, string | undefined>> = {
     sessions: 'sett-sessions-view',

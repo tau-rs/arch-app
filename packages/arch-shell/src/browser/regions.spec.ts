@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { REGIONS, hostId, regionOf, type Region } from './regions';
+import { HOSTED_REGIONS, REGIONS, hostId, regionOf, type Region } from './regions';
 
 test('the four regions map onto four distinct Theia areas, as the seed design fixes them', () => {
     const areas = REGIONS.map(r => r.area);
@@ -10,6 +10,10 @@ test('the four regions map onto four distinct Theia areas, as the seed design fi
 
 test('host ids are stable and namespaced: arch.<region>', () => {
     assert.deepEqual(REGIONS.map(r => hostId(r.name)), ['arch.bar', 'arch.left', 'arch.inspector', 'arch.panel']);
+});
+
+test('bar, left and inspector are host widgets; the panel is the bottom area itself (#14)', () => {
+    assert.deepEqual(HOSTED_REGIONS.map(r => r.name), ['bar', 'left', 'inspector']);
 });
 
 test('regionOf resolves a host id back to its region and rejects anything else', () => {

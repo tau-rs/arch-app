@@ -1,11 +1,11 @@
 import { injectable, inject, interfaces } from '@theia/core/shared/inversify';
 import { BaseWidget, WidgetFactory } from '@theia/core/lib/browser';
-import { HOST_FACTORY_ID, hostId, Region, RegionName, regionOf } from './regions';
+import { HOST_FACTORY_ID, HOSTED_REGIONS, HostedRegionName, hostId, Region } from './regions';
 import { ArchLeftView } from './sett/left-view';
 import { mountLeft, mountRegion } from './sett/mount';
 
 export interface HostWidgetOptions {
-    region: RegionName;
+    region: HostedRegionName;
 }
 
 /**
@@ -17,12 +17,12 @@ export interface HostWidgetOptions {
 export class ArchHostWidget extends BaseWidget {
     static readonly FACTORY_ID = HOST_FACTORY_ID;
 
-    region!: Region;
+    region!: Region & { name: HostedRegionName };
 
     @inject(ArchLeftView)
     protected readonly leftView!: ArchLeftView;
 
-    init(region: Region): void {
+    init(region: Region & { name: HostedRegionName }): void {
         this.region = region;
         this.id = hostId(region.name);
         this.title.label = region.label;
@@ -41,7 +41,7 @@ export class ArchHostWidget extends BaseWidget {
 export const createHostWidgetFactory = (container: interfaces.Container): WidgetFactory => ({
     id: HOST_FACTORY_ID,
     createWidget(options: HostWidgetOptions): ArchHostWidget {
-        const region = regionOf(hostId(options.region));
+        const region = HOSTED_REGIONS.find(r => r.name === options.region);
         if (!region) {
             throw new Error(`arch-shell: unknown region ${options.region}`);
         }

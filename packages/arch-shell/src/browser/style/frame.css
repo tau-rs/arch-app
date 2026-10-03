@@ -11,3 +11,55 @@
 .arch-host[data-region="inspector"] {
   min-width: var(--sett-size-shell-inspector);
 }
+
+.arch-host[data-region="inspector"] > sett-inspector {
+  height: 100%;
+}
+
+/* the right sidebar column: nothing while the inspector is open, its folded handle when collapsed */
+#theia-right-content-panel .theia-app-sidebar-container {
+  min-width: 0;
+  max-width: 0;
+}
+
+#theia-right-content-panel.theia-mod-collapsed,
+#theia-right-content-panel.theia-mod-collapsed .theia-app-sidebar-container {
+  min-width: var(--sett-size-shell-handle);
+  max-width: var(--sett-size-shell-handle);
+}
+
+.arch-handle-host,
+.arch-handle-host > sett-inspector {
+  height: 100%;
+}
+
+/* the centre and the bottom panel: one sett element fills the area, Theia's dock panel fills its slot */
+.arch-host > sett-frame,
+.arch-host > sett-bottom-panel {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.arch-host > sett-frame::part(inner),
+.arch-host > sett-frame > .lm-DockPanel,
+.arch-host > sett-bottom-panel > .lm-DockPanel {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.arch-host[data-region="centre"] {
+  min-height: var(--sett-size-shell-strip);
+}
+
+.arch-host[data-region="panel"] {
+  min-height: var(--sett-size-shell-strip);
+}
+
+.arch-host[data-region="panel"].arch-closed {
+  max-height: var(--sett-size-shell-strip);
+}
+
+#arch\.status {
+  min-height: var(--sett-size-shell-status);
+  max-height: var(--sett-size-shell-status);
+}
