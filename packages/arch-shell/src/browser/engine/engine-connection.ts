@@ -25,7 +25,7 @@ export class EngineConnection {
     @postConstruct()
     protected init(): void {
         const client: EngineBridgeClient = {
-            onFrame: frame => this.frameEmitter.fire(frame),
+            onFrame: frame => { this.frameEmitter.fire(frame); },
             onStatus: status => { this.status = status; this.statusEmitter.fire(status); },
         };
         this.bridge = this.connectionProvider.createProxy<EngineBridge>(ENGINE_BRIDGE_PATH, client);

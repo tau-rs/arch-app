@@ -1,5 +1,5 @@
 import { injectable, postConstruct } from '@theia/core/shared/inversify';
-import React = require('@theia/core/shared/react');
+import * as React from '@theia/core/shared/react';
 import { StatusBarImpl } from '@theia/core/lib/browser/status-bar/status-bar';
 import { STATUS_ID, STATUS_ITEMS } from './frame';
 

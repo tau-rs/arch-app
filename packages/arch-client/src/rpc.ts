@@ -40,7 +40,7 @@ export class JsonRpc {
         let set = this.listeners.get(method);
         if (!set) { set = new Set(); this.listeners.set(method, set); }
         set.add(listener);
-        return { dispose: () => { set!.delete(listener); } };
+        return { dispose: () => { set.delete(listener); } };
     }
 
     dispose(): void {
@@ -50,7 +50,7 @@ export class JsonRpc {
 
     private receive(frame: string): void {
         let msg: { id?: number; method?: string; params?: unknown; result?: unknown; error?: RpcError };
-        try { msg = JSON.parse(frame); } catch { return; } // a frame that is not JSON is not for us
+        try { msg = JSON.parse(frame) as typeof msg; } catch { return; } // a frame that is not JSON is not for us
         if (typeof msg.id === 'number' && msg.method === undefined) {
             const p = this.pending.get(msg.id);
             if (!p) { return; }

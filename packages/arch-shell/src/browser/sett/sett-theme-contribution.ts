@@ -24,10 +24,10 @@ export class SettThemeContribution implements FrontendApplicationContribution {
     initialize(): void {
         const stored = window.localStorage.getItem(ThemeService.STORAGE_KEY);
         this.monacoThemes.registerParsedTheme({
-            id: SETT_LIGHT, label: 'sett light', uiTheme: 'vs', json: require('@tau-rs/sett-tokens/sett-theme.light.json'),
+            id: SETT_LIGHT, label: 'sett light', uiTheme: 'vs', json: require('@tau-rs/sett-tokens/sett-theme.light.json') as object,
         });
         this.monacoThemes.registerParsedTheme({
-            id: SETT_DARK, label: 'sett dark', uiTheme: 'vs-dark', json: require('@tau-rs/sett-tokens/sett-theme.dark.json'),
+            id: SETT_DARK, label: 'sett dark', uiTheme: 'vs-dark', json: require('@tau-rs/sett-tokens/sett-theme.dark.json') as object,
         });
         if (!stored || stored === SETT_LIGHT || stored === SETT_DARK) {
             this.themes.setCurrentTheme(stored ?? this.themes.defaultTheme.id, false);

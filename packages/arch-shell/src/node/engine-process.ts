@@ -223,7 +223,7 @@ export class EngineProcess {
             this.buffer = this.buffer.slice(nl + 1);
             if (!line) { continue; }
             let msg: { id?: unknown; result?: { engineVersion?: string; schemaVersion?: string }; error?: { message: string } } | undefined;
-            try { msg = JSON.parse(line); } catch { msg = undefined; }
+            try { msg = JSON.parse(line) as typeof msg; } catch { msg = undefined; }
             if (msg && msg.id === INIT_ID) {
                 if (msg.error) {
                     this.set({ state: 'failed', detail: `initialize refused: ${msg.error.message}` });

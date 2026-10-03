@@ -42,8 +42,8 @@ export class EngineHost implements BackendApplicationContribution {
             discovery: { preference: options.binaryPath, env: process.env.ARCH_BIN, pathVar: process.env.PATH, bundled: bundledSlot(), platform: process.platform },
             spawner: this.spawner(),
             clientSchemaVersion: SCHEMA_VERSION,
-            onFrame: frame => { for (const l of set!) { l.onFrame(frame); } },
-            onStatus: status => { this.logger.info(`arch engine [${repoRoot}]: ${status.state}${status.detail ? ` (${status.detail})` : ''}`); for (const l of set!) { l.onStatus(status); } },
+            onFrame: frame => { for (const l of set) { l.onFrame(frame); } },
+            onStatus: status => { void this.logger.info(`arch engine [${repoRoot}]: ${status.state}${status.detail ? ` (${status.detail})` : ''}`); for (const l of set) { l.onStatus(status); } },
         });
         this.engines.set(repoRoot, engine);
         return engine.start();
