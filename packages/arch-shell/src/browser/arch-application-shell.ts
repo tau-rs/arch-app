@@ -25,6 +25,9 @@ export class ArchApplicationShell extends ApplicationShell {
     centre!: ArchSlotHost;
     panel!: ArchSlotHost;
 
+    /** the open panel holds its default size and the shell is still starting: it keeps the ratio as the column settles */
+    protected panelAtRatio = false;
+
     protected override createLayout(): Layout {
         const layout = super.createLayout();
         const split = this.bottomPanel.parent as SplitPanel;
@@ -45,6 +48,15 @@ export class ArchApplicationShell extends ApplicationShell {
         SplitPanel.setStretch(this.panel, 0);
         split.addWidget(this.centre);
         split.addWidget(this.panel);
+
+        // sett's bar and status bar render after the panel first opens, and the column shrinks by their height (issue #16)
+        MessageLoop.installMessageHook(split, (_handler, msg) => {
+            if (msg.type === 'resize' && this.panelAtRatio) {
+                this.openAtRatio();
+            }
+            return true;
+        });
+        void this.applicationStateService.reachedState('ready').then(() => this.panelAtRatio = false);
         return layout;
     }
 
@@ -65,12 +77,26 @@ export class ArchApplicationShell extends ApplicationShell {
             this.panel.element.removeAttribute('closed');
             this.panel.removeClass('arch-closed');
             MessageLoop.sendMessage(this.panel.parent!, Widget.Msg.FitRequest);
+            // Theia opens a bottom area with no terminal at `emptySize`; sett's panel always has its tabs, so it opens at the ratio
+            if (this.bottomPanelState.lastPanelSize === undefined) {
+                this.bottomPanelState.lastPanelSize = this.getDefaultBottomPanelSize();
+                this.panelAtRatio = this.applicationStateService.state !== 'ready';
+            }
         }
         super.expandBottomPanel();
         this.markPanel();
     }
 
+    protected openAtRatio(): void {
+        const size = this.getDefaultBottomPanelSize();
+        if (size && !this.bottomPanel.isHidden) {
+            this.bottomPanelState.lastPanelSize = size;
+            void this.setBottomPanelSize(size);
+        }
+    }
+
     protected override async collapseBottomPanel(): Promise<void> {
+        this.panelAtRatio = false;
         await super.collapseBottomPanel();
         this.markPanel();
     }

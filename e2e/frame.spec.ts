@@ -88,6 +88,22 @@ for (const scheme of ['light', 'dark'] as const) {
             await expect.poll(async () => (await area.boundingBox())?.height ?? 0).toBeGreaterThan(parseFloat(strip));
         });
 
+        test('the bottom panel opens at one height on a first start and after a reload, shorter than the centre', async ({ page }) => {
+            // issue #16: a first start (clean storage) gave the panel more than the centre, a reload gave it Theia's emptySize
+            const heights = async () => ({
+                panel: (await host(page, 'arch.panel').boundingBox())?.height ?? 0,
+                centre: (await host(page, 'arch.centre').boundingBox())?.height ?? 0,
+            });
+            await open(page);
+            const first = await heights();
+            expect(first.panel, 'open, above its strip').toBeGreaterThan(parseFloat(await page.evaluate(() =>
+                getComputedStyle(document.documentElement).getPropertyValue('--sett-size-shell-strip'))));
+            expect(first.panel, 'shorter than the centre').toBeLessThan(first.centre);
+            await page.reload();
+            await open(page);
+            await expect.poll(async () => Math.abs((await heights()).panel - first.panel), 'same height after a reload').toBeLessThanOrEqual(2);
+        });
+
         test('the terminal opens inside the bottom panel, in its terminal slot', async ({ page }) => {
             await open(page);
             const panel = host(page, 'arch.panel').locator('sett-bottom-panel');
