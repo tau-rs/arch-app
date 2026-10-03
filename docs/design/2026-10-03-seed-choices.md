@@ -91,7 +91,9 @@ local until `arch-design` opens.
 - inversify 7 has no injectable container: widget factories are `toDynamicValue(ctx => …)`.
 - `@theia/markers` arrives with `@theia/monaco`; its Problems view is removed with Theia's
   `FilterContribution`, the model stays.
-- Nothing in `initializeLayout` may await a widget's visibility: the shell is not in the DOM yet.
+- Nothing in `initializeLayout` may await a widget's visibility: the shell is attached there but not
+  revealed, and the reveal comes after it. `onStart` runs before the shell is even attached, so nothing
+  measured there is real: a size Theia computes from a `clientHeight` is lost (issue #16).
 - sett v0.4.0 is a GitHub release, not an npm package: the root `overrides` map both names to the
   release tarballs (one place, integrity in the lock file); `arch-shell` asks for plain `0.4.0`.
 - `@tau-rs/sett` is ESM only and Theia extensions compile to CommonJS: each application's
@@ -116,3 +118,8 @@ local until `arch-design` opens.
   `sett-status-bar` and takes another id, so none of Theia's status bar styles apply.
 - Theia's terminal extension opens a terminal on a first start; the panel still starts on Findings,
   and shows Terminal only for a terminal opened once the app is ready.
+- The bottom panel opens at Theia's `bottomPanel.initialSizeRatio` of its column, from
+  `initializeLayout` on a first start and from the saved size after that (#16). Theia's `emptySize`
+  (an empty bottom area opens small) does not apply: sett's panel always has its tabs. sett's bar and
+  status bar render after that first open and the column shrinks by their height, so until the app is
+  ready the open panel goes back to the ratio on every resize of its column.

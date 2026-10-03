@@ -14,8 +14,9 @@ const NEW_TERMINAL = 'terminal:new';
  * Puts one host widget in each hosted region, and makes the bottom panel answer what it reports.
  * `initializeLayout` runs on a first start with no saved layout; `onStart` runs on every start, so a
  * region deleted from a saved layout comes back: the frame never loses a region. Nothing here awaits
- * visibility: during `initializeLayout` the shell is not in the DOM yet, and awaiting a reveal there
- * would hang the whole start sequence.
+ * visibility: during `initializeLayout` the shell is attached but not revealed, and awaiting a reveal
+ * there would hang the whole start sequence. `onStart` runs before the shell is attached, so nothing
+ * there can be measured: the bottom panel opens in `initializeLayout`.
  */
 @injectable()
 export class ArchShellContribution implements FrontendApplicationContribution {
@@ -31,12 +32,14 @@ export class ArchShellContribution implements FrontendApplicationContribution {
 
     async initializeLayout(app: FrontendApplication): Promise<void> {
         await this.ensureHosts(app);
+        // the shell is attached here, so the panel's open size can be measured (issue #16); a saved layout restores its own
+        app.shell.expandPanel('bottom');
     }
 
     async onStart(app: FrontendApplication): Promise<void> {
         await this.ensureHosts(app);
         this.bindPanel(app.shell as ArchApplicationShell);
-        for (const area of ['left', 'right', 'bottom'] as const) {
+        for (const area of ['left', 'right'] as const) {
             app.shell.expandPanel(area);
         }
     }
