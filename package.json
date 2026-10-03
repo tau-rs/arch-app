@@ -22,7 +22,7 @@
     "start:electron": "npm --prefix applications/electron start",
     "watch:browser": "lerna run --parallel watch --ignore arch-electron-app",
     "watch:electron": "lerna run --parallel watch --ignore arch-browser-app",
-    "test": "lerna run test",
+    "test": "lerna run build && lerna run test",
     "lint": "lerna run lint",
     "test:e2e": "playwright test"
   },
