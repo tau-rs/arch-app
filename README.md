@@ -5,6 +5,7 @@ client. It computes nothing about architecture: it subscribes to views from `arc
 intents. It owns no styling: every visual element comes from `@tau-rs/sett`.
 
 Synced to: `arch-v1-spec.md` §13 (2026-10-02). ADRs: none published yet; see `FINDINGS.md`.
+sett: v0.4.0 (lanes A–E), from the GitHub release tarballs pinned in the root `overrides`.
 
 ## Layout
 
@@ -17,6 +18,7 @@ applications/
   browser                Theia browser target: the dev loop and the Playwright target
   electron               Theia electron target: the product; spawns `arch serve`              (#2)
 docs/design/             the seed choices and their reasons
+design/theme.json        semantic overrides on sett's tokens; empty, never a raw colour
 FINDINGS.md              what this repo needs from the others
 ```
 

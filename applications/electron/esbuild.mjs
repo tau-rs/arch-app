@@ -6,6 +6,11 @@ import { browserOptions, watch } from './gen-esbuild.browser.mjs';
 import { nodeOptions } from './gen-esbuild.node.mjs';
 import { electronOptions } from './gen-esbuild.electron.mjs';
 import esbuild from 'esbuild';
+import { fileURLToPath } from 'node:url';
+
+// @tau-rs/sett is ESM only (its exports carry no `require` condition) and Theia extensions compile to
+// CommonJS, so the frontend bundle is pointed at sett's one module file.
+browserOptions.alias = { ...browserOptions.alias, '@tau-rs/sett': fileURLToPath(import.meta.resolve('@tau-rs/sett')) };
 
 const browserContext = await esbuild.context(browserOptions);
 const nodeContext = await esbuild.context(nodeOptions);

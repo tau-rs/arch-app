@@ -1,0 +1,4 @@
+{
+  "$comment": "Semantic overrides on sett's tokens for arch-app. Values are sett token names (sett.color.*), never raw colours. Empty: the app takes sett as it is.",
+  "overrides": {}
+}

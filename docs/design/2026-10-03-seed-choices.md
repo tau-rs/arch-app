@@ -92,3 +92,11 @@ local until `arch-design` opens.
 - `@theia/markers` arrives with `@theia/monaco`; its Problems view is removed with Theia's
   `FilterContribution`, the model stays.
 - Nothing in `initializeLayout` may await a widget's visibility: the shell is not in the DOM yet.
+- sett v0.4.0 is a GitHub release, not an npm package: the root `overrides` map both names to the
+  release tarballs (one place, integrity in the lock file); `arch-shell` asks for plain `0.4.0`.
+- `@tau-rs/sett` is ESM only and Theia extensions compile to CommonJS: each application's
+  `esbuild.mjs` aliases the package to its one module file. Its Lit elements then mount in Theia
+  widgets as they are.
+- The rail is a subclass of `SidePanelHandler` rebound in the container (F-2). Sett's colour themes
+  are registered through `MonacoThemingService.registerParsedTheme` and named in `defaultTheme`;
+  `data-theme` on `<html>` mirrors the active theme's type, which is what `sett.css` switches on.
