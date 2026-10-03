@@ -100,3 +100,19 @@ local until `arch-design` opens.
 - The rail is a subclass of `SidePanelHandler` rebound in the container (F-2). Sett's colour themes
   are registered through `MonacoThemingService.registerParsedTheme` and named in `defaultTheme`;
   `data-theme` on `<html>` mirrors the active theme's type, which is what `sett.css` switches on.
+- Choice 3, amended by #14: the areas stay Theia's dock panels, and two of them are drawn by sett.
+  `ArchApplicationShell` (a subclass rebound in the container) moves the main area into `sett-frame`
+  and the bottom area into `sett-bottom-panel`'s `terminal` slot, through a Lumino layout that puts a
+  widget's node inside an element; `addWidget(widget, { area })` is untouched, so a terminal lands in
+  the slot by itself. The panel region is that bottom area, no longer a host widget. Collapsed, the
+  bottom area keeps its strip: `closed` follows Theia's collapsed state, one source of truth.
+- Lumino's dock panel in `single-document` mode keeps its tab bar as a hidden node: no Theia tab bar is
+  drawn in the bottom area, and one terminal shows at a time.
+- The bottom panel is not a `SidePanelHandler`: Theia sizes it as a child of its split panel, so
+  `getBottomPanelSize`, `getDefaultBottomPanelSize` and `setBottomPanelSize` are overridden to name the
+  sett panel. `doToggleMaximized` lifts an area out of that split panel and is turned off.
+- Theia binds its status bar twice (`StatusBarImpl` and `StatusBar`), both over one view model; the
+  rebind is `StatusBarImpl` to the subclass and `StatusBar` to that same service. The subclass renders
+  `sett-status-bar` and takes another id, so none of Theia's status bar styles apply.
+- Theia's terminal extension opens a terminal on a first start; the panel still starts on Findings,
+  and shows Terminal only for a terminal opened once the app is ready.

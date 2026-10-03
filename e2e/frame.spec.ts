@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
-// Issue #12 done criteria: the empty frame is made of sett elements, in both of sett's themes.
+// Issues #12 and #14 done criteria: the empty frame is made of sett elements only, in both of sett's themes.
 const REGION_ELEMENT: Record<string, string> = {
     'arch.bar': 'sett-selector',
     'arch.left': 'sett-scope-line',
@@ -31,6 +31,78 @@ for (const scheme of ['light', 'dark'] as const) {
                 expect(await element.evaluate(e => !!e.shadowRoot), `${tag} is a defined custom element`).toBe(true);
             }
             await expect(host(page, 'arch.panel').locator('sett-panel-tab')).toHaveText(['Findings', 'Checks', 'Terminal', "What's new"]);
+            await expect(host(page, 'arch.panel').locator('sett-bottom-panel')).toHaveAttribute('active', 'findings');
+        });
+
+        test('the centre is Theia\'s main area inside sett-frame, idle', async ({ page }) => {
+            await open(page);
+            const frame = host(page, 'arch.centre').locator('sett-frame');
+            await expect(frame).toHaveAttribute('state', 'idle');
+            await expect(frame.locator('> #theia-main-content-panel')).toBeVisible();
+        });
+
+        test('no Theia tab bar is drawn in the right or the bottom area', async ({ page }) => {
+            await open(page);
+            // Lumino keeps a dock panel's tab bar as a hidden node (single-document mode): none is drawn
+            await expect(host(page, 'arch.inspector')).toBeVisible();
+            await expect(page.locator('#theia-right-content-panel .lm-TabBar:visible')).toHaveCount(0);
+            await expect(page.locator('#theia-right-content-panel .theia-sidepanel-toolbar')).toHaveCount(0);
+            await host(page, 'arch.panel').locator('sett-panel-tab[value="terminal"]').click();
+            await expect(host(page, 'arch.panel').locator('.xterm')).toBeVisible();
+            await expect(host(page, 'arch.panel').locator('.lm-TabBar:visible')).toHaveCount(0);
+        });
+
+        test('the inspector folds to its handle, and the handle unfolds it', async ({ page }) => {
+            await open(page);
+            const inspector = page.locator('sett-inspector');
+            await expect(host(page, 'arch.inspector').locator('sett-inspector')).toBeVisible();
+            // sett has no fold control on the open inspector (FINDINGS F-17): Theia's command folds it
+            await expect(async () => { // the keybindings are bound a moment after the shell shows
+                await page.keyboard.press('F1');
+                await expect(page.locator('.quick-input-widget')).toBeVisible({ timeout: 1000 });
+            }).toPass();
+            await page.keyboard.type('Toggle Right Panel');
+            await page.locator('.quick-input-list .monaco-list-row', { hasText: 'Toggle Right Panel' }).first().click();
+            await expect(inspector).toHaveAttribute('folded', '');
+            await expect(inspector).toHaveCount(1);
+            await expect(host(page, 'arch.inspector')).toBeHidden();
+            const handle = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--sett-size-shell-handle').trim());
+            expect(`${(await inspector.boundingBox())?.width}px`).toBe(handle);
+            await inspector.getByRole('button').click();
+            await expect(inspector).not.toHaveAttribute('folded');
+            await expect(host(page, 'arch.inspector').locator('sett-inspector')).toBeVisible();
+        });
+
+        test('the bottom panel closes to its strip and opens again', async ({ page }) => {
+            await open(page);
+            const area = host(page, 'arch.panel');
+            const panel = area.locator('sett-bottom-panel');
+            const strip = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--sett-size-shell-strip').trim());
+            await expect(panel).not.toHaveAttribute('closed');
+            await panel.getByRole('button', { name: 'close the panel' }).click();
+            await expect(panel).toHaveAttribute('closed', '');
+            await expect.poll(async () => `${(await area.boundingBox())?.height}px`).toBe(strip);
+            await expect(panel.locator('sett-panel-tab')).toHaveCount(4);
+            await panel.getByRole('button', { name: 'open the panel' }).click();
+            await expect(panel).not.toHaveAttribute('closed');
+            await expect.poll(async () => (await area.boundingBox())?.height ?? 0).toBeGreaterThan(parseFloat(strip));
+        });
+
+        test('the terminal opens inside the bottom panel, in its terminal slot', async ({ page }) => {
+            await open(page);
+            const panel = host(page, 'arch.panel').locator('sett-bottom-panel');
+            await panel.locator('sett-panel-tab[value="terminal"]').click();
+            await expect(panel).toHaveAttribute('active', 'terminal');
+            await expect(panel.locator('> [slot="terminal"] .xterm')).toBeVisible();
+        });
+
+        test('the status bar is sett-status-bar: the scope item first, then the engine state', async ({ page }) => {
+            await open(page);
+            const items = page.locator('sett-status-bar > sett-status-item');
+            await expect(items.first()).toHaveAttribute('scope', 'main');
+            await expect(items.nth(1)).toHaveText('engine · not found', { timeout: 20_000 });
+            await expect(items).toHaveCount(2);
+            await expect(page.locator('#theia-statusBar')).toHaveCount(0);
         });
 
         test('the rail shows three labelled items in place of the left tab bar', async ({ page }) => {
@@ -70,12 +142,9 @@ for (const scheme of ['light', 'dark'] as const) {
             expect(settToken).not.toBe('');
         });
 
-        // The gate is WCAG 2.1 A/AA on what this repo composes: the four regions and the rail.
-        // Theia's own chrome fails three rules on its tab bars and status items (FINDINGS F-15).
-        test('the sett regions and the rail pass the accessibility scan', async ({ page }) => {
+        test('the whole page passes the accessibility scan', async ({ page }) => {
             await open(page);
             const results = await new AxeBuilder({ page })
-                .include('.arch-host').include('.arch-rail-host')
                 .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
                 .analyze();
             expect(results.passes.length, 'the scan reached the sett elements').toBeGreaterThan(0);

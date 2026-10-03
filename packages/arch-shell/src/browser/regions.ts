@@ -7,8 +7,11 @@
  *   inspector  → right    about the selection
  *   panel      → bottom   Findings · Checks · Terminal · What's new
  *
- * The center is Theia's main area and needs no host: editors open there by themselves, and the
- * Map becomes a pinned widget in milestone 2. The status bar is Theia's StatusBar service.
+ * bar, left and inspector are host widgets added to their area. The panel is not: it is the bottom
+ * area itself, held by `sett-bottom-panel` (arch-application-shell.ts), under the same `arch.panel` id.
+ * The center is Theia's main area inside `sett-frame`: editors open there by themselves, and the
+ * Map becomes a pinned widget in milestone 2. The status bar is Theia's StatusBar service, drawn by
+ * `sett-status-bar`.
  */
 export type RegionName = 'bar' | 'left' | 'inspector' | 'panel';
 export type TheiaArea = 'top' | 'left' | 'right' | 'bottom';
@@ -16,7 +19,7 @@ export type TheiaArea = 'top' | 'left' | 'right' | 'bottom';
 export interface Region {
     readonly name: RegionName;
     readonly area: TheiaArea;
-    /** the tab title Theia shows until the sett composition replaces the chrome */
+    /** the widget's title: Theia's model of the area, never drawn */
     readonly label: string;
     readonly closable: false;
 }
@@ -31,6 +34,11 @@ export const REGIONS: readonly Region[] = [
 export const HOST_FACTORY_ID = 'arch.host';
 
 export const hostId = (name: RegionName): string => `arch.${name}`;
+
+/** the regions that are a host widget in their area */
+export type HostedRegionName = Exclude<RegionName, 'panel'>;
+export const HOSTED_REGIONS = REGIONS.filter(
+    (r): r is Region & { name: HostedRegionName } => r.name !== 'panel');
 
 export const regionOf = (id: string): Region | undefined =>
     REGIONS.find(r => hostId(r.name) === id);

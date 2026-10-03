@@ -1,6 +1,6 @@
 import '@tau-rs/sett';
 import type { RegionName } from '../regions';
-import { LEFT_VIEW_ELEMENT, PANEL_TABS, RAIL_VIEWS, RailView } from './frame';
+import { CENTRE_ELEMENT, LEFT_VIEW_ELEMENT, PANEL_TABS, RAIL_VIEWS, RailView } from './frame';
 
 /**
  * Builds the empty frame out of sett elements. Every attribute and slot used here is in sett's
@@ -37,26 +37,22 @@ const mountInspector = (host: HTMLElement): void => {
     host.replaceChildren(el('sett-inspector'));
 };
 
-/** the bottom panel: its four tabs, no counts, no bodies. The panel reports; the app sets `active` and `closed`. */
-const mountPanel = (host: HTMLElement): void => {
-    const panel = el('sett-bottom-panel', { active: PANEL_TABS[0].value },
+/**
+ * the bottom panel: its four tabs, no counts, no bodies. The panel reports (`sett-select`,
+ * `sett-toggle`); the shell sets `active` and `closed` (arch-shell-contribution.ts).
+ */
+export const createPanel = (): HTMLElement =>
+    el('sett-bottom-panel', { active: PANEL_TABS[0].value, closed: '' },
         PANEL_TABS.map(tab => el('sett-panel-tab', { slot: 'tabs', value: tab.value }, [text(tab.label)])));
-    panel.addEventListener('sett-select', e => {
-        panel.setAttribute('active', (e as CustomEvent<{ value: string }>).detail.value);
-        panel.removeAttribute('closed');
-    });
-    panel.addEventListener('sett-toggle', e => {
-        panel.toggleAttribute('closed', (e as CustomEvent<{ closed: boolean }>).detail.closed);
-    });
-    host.replaceChildren(panel);
-};
 
-export const mountRegion = (region: RegionName, host: HTMLElement, view: RailView): void => {
+/** the frame around the centre: idle, the only state there is with no session */
+export const createFrame = (): HTMLElement => el(CENTRE_ELEMENT, { state: 'idle' });
+
+export const mountRegion = (region: Exclude<RegionName, 'panel'>, host: HTMLElement, view: RailView): void => {
     switch (region) {
         case 'bar': return mountBar(host);
         case 'left': return mountLeft(host, view);
         case 'inspector': return mountInspector(host);
-        case 'panel': return mountPanel(host);
     }
 };
 
