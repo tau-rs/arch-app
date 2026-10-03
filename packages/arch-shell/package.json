@@ -12,11 +12,16 @@
   ],
   "dependencies": {
     "@theia/core": "1.76.0",
-    "@theia/markers": "1.76.0"
+    "@theia/markers": "1.76.0",
+    "@tau-rs/arch-client": "0.0.0",
+    "@theia/process": "1.76.0",
+    "@theia/workspace": "1.76.0"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "@tau-rs/arch-fixtures-loader": "0.0.0",
+    "@types/node": "^24.0.0"
   },
   "scripts": {
     "clean": "rimraf lib",
@@ -26,7 +31,8 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/arch-shell-frontend-module"
+      "frontend": "lib/browser/arch-shell-frontend-module",
+      "backend": "lib/node/arch-shell-backend-module"
     }
   ]
 }

@@ -46,7 +46,8 @@ the login shell's PATH through `fix-path`) → bundled slot. Attach to an existi
 spawning; stale socket unlinked. Spawn through `@theia/process`. Ready = connected and `initialize`
 answered with engine and schema version; a schema mismatch is a status, views still served. Restart
 until the 5th crash within 3 minutes (vscode-languageclient's default). SIGTERM, then SIGKILL after
-5 s. Every failure is a status-bar state and a Checks row, never a dialog (ADR 23). The socket path
+5 s. A candidate is trusted only if `--version` prints `arch <semver>`: `arch` is also a macOS and
+coreutils command, and PATH discovery found that one first (F-8). Every failure is a status-bar state and a Checks row, never a dialog (ADR 23). The socket path
 is the engine's convention, derived from the repo root (tau-rs/arch#7).
 
 ## 6 · schema pinned by repo path and commit; generated client committed
@@ -80,3 +81,14 @@ fixtures directly and never sends a request.
 `FINDINGS.md` entries carry id, to, ask, blocks-here, status; the README states what the repo is
 synced to; work is filed as arch-app issues before it starts (#1–#6). Findings for other repos stay
 local until `arch-design` opens.
+
+## Learned while building (2026-10-03)
+
+- Theia 1.76 bundles with esbuild, not webpack: `esbuild.mjs` per application is committed,
+  `gen-esbuild.*.mjs` is generated and ignored.
+- npm runs each workspace package's own `prepare` in arbitrary order, so packages have no
+  `prepare`; the root's `lerna run build` is the only build on install, in dependency order.
+- inversify 7 has no injectable container: widget factories are `toDynamicValue(ctx => …)`.
+- `@theia/markers` arrives with `@theia/monaco`; its Problems view is removed with Theia's
+  `FilterContribution`, the model stays.
+- Nothing in `initializeLayout` may await a widget's visibility: the shell is not in the DOM yet.
