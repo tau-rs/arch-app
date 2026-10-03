@@ -30,7 +30,7 @@ export class ArchSidePanelHandler extends SidePanelHandler {
         const container = super.createContainer();
         const sidebar = this.tabBar.parent as Panel;
         for (const stock of [this.topMenu, this.tabBar, this.additionalViewsMenu, this.bottomMenu, this.toolBar]) {
-            stock.parent = null; // eslint-disable-line no-null/no-null
+            stock.parent = null;
         }
         if (this.side === 'left') {
             this.createRail(sidebar);
@@ -58,7 +58,7 @@ export class ArchSidePanelHandler extends SidePanelHandler {
                 return;
             }
             if (active && !closed()) {
-                this.collapse(); // the active item pressed again closes the pane; the rail stays
+                void this.collapse(); // the active item pressed again closes the pane; the rail stays
             } else {
                 this.leftView.set(value);
                 this.expand(hostId('left'));

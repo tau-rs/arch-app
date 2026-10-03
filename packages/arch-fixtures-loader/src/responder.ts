@@ -15,7 +15,7 @@ export class FixtureResponder {
     /** the response frame for a request frame; undefined for a notification (nothing to answer) or garbage */
     handle(frame: string): string | undefined {
         let msg: { id?: number | string; method?: string };
-        try { msg = JSON.parse(frame); } catch { return undefined; }
+        try { msg = JSON.parse(frame) as typeof msg; } catch { return undefined; }
         if (msg.id === undefined) { return undefined; }
         if (typeof msg.method !== 'string') {
             return JSON.stringify({ jsonrpc: '2.0', id: msg.id, error: { code: INVALID_REQUEST, message: 'Invalid Request' } });

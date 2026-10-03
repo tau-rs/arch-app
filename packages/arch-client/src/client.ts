@@ -10,7 +10,7 @@ export class ArchClient<M extends MethodMap, E extends EventMap> {
     constructor(readonly rpc: JsonRpc) { }
 
     call<K extends keyof M & string>(method: K, params: M[K]['params']): Promise<M[K]['result']> {
-        return this.rpc.request(method, params) as Promise<M[K]['result']>;
+        return this.rpc.request(method, params);
     }
 
     on<K extends keyof E & string>(event: K, listener: (payload: E[K]) => void): Disposable {

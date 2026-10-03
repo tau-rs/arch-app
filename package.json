@@ -27,10 +27,12 @@
     "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.58.0",
+    "eslint": "^9.39.5",
     "lerna": "^9.0.7",
     "typescript": "~5.9.3",
-    "@playwright/test": "^1.58.0",
-    "@axe-core/playwright": "^4.10.0"
+    "typescript-eslint": "^8.71.0"
   },
   "allowScripts": {
     "@parcel/watcher": true,

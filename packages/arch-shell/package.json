@@ -11,25 +11,27 @@
     "src"
   ],
   "dependencies": {
-    "@theia/core": "1.76.0",
-    "@theia/markers": "1.76.0",
     "@tau-rs/arch-client": "0.0.0",
-    "@theia/process": "1.76.0",
-    "@theia/workspace": "1.76.0",
     "@tau-rs/sett": "0.4.0",
     "@tau-rs/sett-tokens": "0.4.0",
-    "@theia/monaco": "1.76.0"
+    "@theia/core": "1.76.0",
+    "@theia/markers": "1.76.0",
+    "@theia/monaco": "1.76.0",
+    "@theia/process": "1.76.0",
+    "@theia/workspace": "1.76.0"
   },
   "devDependencies": {
-    "rimraf": "^6.0.1",
-    "typescript": "~5.9.3",
     "@tau-rs/arch-fixtures-loader": "0.0.0",
-    "@types/node": "^24.0.0"
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.3.0",
+    "rimraf": "^6.0.1",
+    "typescript": "~5.9.3"
   },
   "scripts": {
     "clean": "rimraf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
+    "lint": "eslint src",
     "test": "node --test --test-reporter=spec lib/**/*.spec.js"
   },
   "theiaExtensions": [
