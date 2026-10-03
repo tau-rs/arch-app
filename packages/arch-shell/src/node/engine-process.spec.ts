@@ -22,10 +22,12 @@ const fakeArch = (dir: string, body?: string): string => {
 test('discovery: preference → ARCH_BIN → PATH → bundled, and the list of where it looked', () => {
     const dir = tmp();
     const bin = fakeArch(dir);
-    assert.deepEqual(resolveBinary({ preference: bin }), { binary: bin, source: 'preference', version: '0.0.0-fake' });
-    assert.deepEqual(resolveBinary({ preference: '/nope/arch', env: bin }), { binary: bin, source: 'env', version: '0.0.0-fake' });
-    assert.deepEqual(resolveBinary({ pathVar: `/nope:${dir}` }), { binary: bin, source: 'path', version: '0.0.0-fake' });
-    assert.deepEqual(resolveBinary({ pathVar: '/nope', bundled: bin }), { binary: bin, source: 'bundled', version: '0.0.0-fake' });
+    // this checks the order, not the probe: a real exec of a fresh file can exceed the 3 s timeout under load (#19)
+    const identify = () => ({ version: '0.0.0-fake' });
+    assert.deepEqual(resolveBinary({ preference: bin, identify }), { binary: bin, source: 'preference', version: '0.0.0-fake' });
+    assert.deepEqual(resolveBinary({ preference: '/nope/arch', env: bin, identify }), { binary: bin, source: 'env', version: '0.0.0-fake' });
+    assert.deepEqual(resolveBinary({ pathVar: `/nope:${dir}`, identify }), { binary: bin, source: 'path', version: '0.0.0-fake' });
+    assert.deepEqual(resolveBinary({ pathVar: '/nope', bundled: bin, identify }), { binary: bin, source: 'bundled', version: '0.0.0-fake' });
     const miss = resolveBinary({ preference: '/nope/arch', env: '/nope2/arch', pathVar: '/nope', bundled: '/nope3/arch' });
     assert.ok('looked' in miss && miss.looked.length === 4, JSON.stringify(miss));
 });
