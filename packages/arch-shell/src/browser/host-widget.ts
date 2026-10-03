@@ -1,6 +1,8 @@
-import { injectable, interfaces } from '@theia/core/shared/inversify';
+import { injectable, inject, interfaces } from '@theia/core/shared/inversify';
 import { BaseWidget, WidgetFactory } from '@theia/core/lib/browser';
 import { HOST_FACTORY_ID, hostId, Region, RegionName, regionOf } from './regions';
+import { ArchLeftView } from './sett/left-view';
+import { mountLeft, mountRegion } from './sett/mount';
 
 export interface HostWidgetOptions {
     region: RegionName;
@@ -8,14 +10,17 @@ export interface HostWidgetOptions {
 
 /**
  * A host widget is the smallest thing Theia lets you put in an area: an id, a title, one DOM node,
- * nothing drawn inside. It makes the region exist in the layout and owns the element the sett
- * composition mounts into later. It never imitates a sett-* element (HANDOFF §3).
+ * nothing drawn of its own. It makes the region exist in the layout and holds the region's sett
+ * elements, with no data (sett/mount.ts). It never imitates a sett-* element (HANDOFF §3).
  */
 @injectable()
 export class ArchHostWidget extends BaseWidget {
     static readonly FACTORY_ID = HOST_FACTORY_ID;
 
     region!: Region;
+
+    @inject(ArchLeftView)
+    protected readonly leftView!: ArchLeftView;
 
     init(region: Region): void {
         this.region = region;
@@ -25,6 +30,10 @@ export class ArchHostWidget extends BaseWidget {
         this.title.closable = region.closable;
         this.addClass('arch-host');
         this.node.dataset.region = region.name;
+        mountRegion(region.name, this.node, this.leftView.view);
+        if (region.name === 'left') {
+            this.toDispose.push(this.leftView.onDidChange(view => mountLeft(this.node, view)));
+        }
     }
 }
 

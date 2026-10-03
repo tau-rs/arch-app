@@ -31,7 +31,8 @@
     "frontend": {
       "config": {
         "applicationName": "arch",
-        "preferences": { "files.enableTrash": false }
+        "defaultTheme": { "light": "sett-light", "dark": "sett-dark" },
+        "preferences": { "files.enableTrash": false, "security.workspace.trust.startupPrompt": "never" }
       }
     },
     "backend": {

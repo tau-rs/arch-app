@@ -1,0 +1,13 @@
+/* Layout only: the sizes sett's tokens give the frame's regions. No colour, no type: those are sett's. */
+#theia-left-content-panel .theia-app-sidebar-container {
+  min-width: var(--sett-size-shell-rail);
+  max-width: var(--sett-size-shell-rail);
+}
+
+.arch-host[data-region="left"] {
+  min-width: var(--sett-size-shell-pane-min);
+}
+
+.arch-host[data-region="inspector"] {
+  min-width: var(--sett-size-shell-inspector);
+}

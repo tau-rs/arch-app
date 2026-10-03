@@ -36,7 +36,9 @@
       "config": {
         "applicationName": "arch",
         "reloadOnReconnect": true,
-        "electron": { "appUserModelId": "rs.tau.arch", "showWindowEarly": false }
+        "electron": { "appUserModelId": "rs.tau.arch", "showWindowEarly": false },
+        "defaultTheme": { "light": "sett-light", "dark": "sett-dark" },
+        "preferences": { "security.workspace.trust.startupPrompt": "never" }
       }
     },
     "backend": {

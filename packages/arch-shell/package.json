@@ -15,7 +15,10 @@
     "@theia/markers": "1.76.0",
     "@tau-rs/arch-client": "0.0.0",
     "@theia/process": "1.76.0",
-    "@theia/workspace": "1.76.0"
+    "@theia/workspace": "1.76.0",
+    "@tau-rs/sett": "0.4.0",
+    "@tau-rs/sett-tokens": "0.4.0",
+    "@theia/monaco": "1.76.0"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",
