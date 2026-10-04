@@ -1,7 +1,8 @@
 import { connect, Socket } from 'node:net';
-import { accessSync, constants, existsSync, unlinkSync } from 'node:fs';
+import { accessSync, constants, existsSync, realpathSync, unlinkSync } from 'node:fs';
 import { delimiter, join } from 'node:path';
-import { EngineState, EngineStatus } from '../common/engine-protocol';
+import { schemaCompatibility, SocketEnv, socketPathFor } from '@tau-rs/arch-client';
+import { COMPATIBILITY_NOTE, EngineState, EngineStatus } from '../common/engine-protocol';
 
 /**
  * The engine host's core (seed design, choice 5), free of Theia so it is tested against the fake
@@ -75,6 +76,16 @@ export const resolveBinary = (d: Discovery): Resolved | { looked: string[] } => 
     }
     if (!looked.some(l => l.startsWith('path:'))) { looked.push(`path: no arch in ${dirs.length} directories`); }
     return tryOne(d.bundled, 'bundled') ?? { looked };
+};
+
+/**
+ * The engine hashes getcwd(), which is the physical path (ADR 0034 §2): resolve symlinks first, so
+ * a root like /tmp/x on macOS (/tmp → /private/tmp) lands on the engine's socket, not a sibling.
+ */
+export const socketPathForRoot = (repoRoot: string, env: SocketEnv): string => {
+    let real = repoRoot;
+    try { real = realpathSync(repoRoot); } catch { /* a missing root: the spawn fails on it and says so */ }
+    return socketPathFor(real, env);
 };
 
 export interface SpawnedProcess {
@@ -229,7 +240,9 @@ export class EngineProcess {
                     this.set({ state: 'failed', detail: `initialize refused: ${msg.error.message}` });
                     done(false);
                 } else {
-                    this.set({ state: 'ready', attached, engineVersion: msg.result?.engineVersion, schemaVersion: msg.result?.schemaVersion, clientSchemaVersion: this.o.clientSchemaVersion });
+                    const schemaVersion = msg.result?.schemaVersion;
+                    const compatibility = schemaCompatibility(this.o.clientSchemaVersion, schemaVersion);
+                    this.set({ state: 'ready', attached, engineVersion: msg.result?.engineVersion, schemaVersion, clientSchemaVersion: this.o.clientSchemaVersion, compatibility, detail: COMPATIBILITY_NOTE[compatibility] });
                     done(true);
                 }
                 continue;

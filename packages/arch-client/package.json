@@ -14,7 +14,7 @@
     "schema:sync": "node ../../scripts/sync-pinned.mjs schema/schema.lock.json schema/arch-api.json --kind file",
     "generate": "node scripts/generate.mjs",
     "clean": "rimraf lib",
-    "build": "npm run clean && npm run generate && tsc",
+    "build": "npm run clean && npm run schema:sync && npm run generate && tsc",
     "watch": "tsc -w",
     "lint": "eslint src",
     "test": "node --test --test-reporter=spec lib/**/*.spec.js scripts/*.spec.mjs && node scripts/generate.mjs --check"

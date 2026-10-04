@@ -91,6 +91,9 @@ export async function generate(doc) {
 
 const main = async () => {
     const doc = existsSync(schemaPath) ? JSON.parse(readFileSync(schemaPath, 'utf8')) : undefined;
+    const lockPath = join(here, '..', 'schema', 'schema.lock.json');
+    const pinned = existsSync(lockPath) ? JSON.parse(readFileSync(lockPath, 'utf8')).commit : 'none';
+    if (!doc && pinned && pinned !== 'none') { throw new Error(`generate: ${schemaPath} is missing but schema.lock.json pins ${pinned.slice(0, 8)}; run \`npm run schema:sync\``); }
     if (!doc) { console.log(`generate: no schema at ${schemaPath}; emitting the empty module`); }
     const files = await generate(doc);
     if (check) {

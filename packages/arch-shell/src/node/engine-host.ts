@@ -4,9 +4,9 @@ import { BackendApplicationContribution } from '@theia/core/lib/node';
 import { RawProcessFactory } from '@theia/process/lib/node';
 import { userInfo } from 'node:os';
 import { join } from 'node:path';
-import { SCHEMA_VERSION, socketPathFor } from '@tau-rs/arch-client';
+import { SCHEMA_VERSION } from '@tau-rs/arch-client';
 import { EngineOpenOptions, EngineStatus } from '../common/engine-protocol';
-import { EngineProcess, Spawner } from './engine-process';
+import { EngineProcess, Spawner, socketPathForRoot } from './engine-process';
 
 export interface EngineListener {
     onFrame(frame: string): void;
@@ -36,7 +36,7 @@ export class EngineHost implements BackendApplicationContribution {
         set.add(listener);
         const existing = this.engines.get(repoRoot);
         if (existing) { return existing.status; }
-        const socketPath = socketPathFor(repoRoot, { platform: process.platform, uid: userInfo().uid, runtimeDir: process.env.XDG_RUNTIME_DIR });
+        const socketPath = socketPathForRoot(repoRoot, { platform: process.platform, uid: userInfo().uid, runtimeDir: process.env.XDG_RUNTIME_DIR });
         const engine = new EngineProcess({
             repoRoot, socketPath,
             discovery: { preference: options.binaryPath, env: process.env.ARCH_BIN, pathVar: process.env.PATH, bundled: bundledSlot(), platform: process.platform },
