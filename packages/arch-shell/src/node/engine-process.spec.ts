@@ -77,6 +77,7 @@ test('attach before spawn: a running engine on the socket is used, nothing is sp
         assert.equal(s.state, 'ready');
         assert.equal(s.attached, true);
         assert.equal(s.schemaVersion, '0.1');
+        assert.equal(s.compatibility, 'ok');
         assert.equal(spawned, 0);
         await new Promise(r => setTimeout(r, 30));
         assert.deepEqual(frames.map(f => JSON.parse(f).method), ['tick', 'tick']); // events after the handshake reach the frame listener
@@ -96,6 +97,8 @@ test('spawn: the binary is started in the repo, readiness is connect + initializ
     assert.equal(s.attached, false);
     assert.equal(s.engineVersion, 'fake-0.0.0');
     assert.equal(s.clientSchemaVersion, 'none');
+    assert.equal(s.compatibility, 'unknown'); // a status, not a refusal: still ready
+    assert.match(s.detail ?? '', /not semver/);
     p.send(JSON.stringify({ jsonrpc: '2.0', id: 7, method: 'ping' }));
     await new Promise(r => setTimeout(r, 50));
     const pong = frames.map(f => JSON.parse(f)).find(m => m.id === 7);

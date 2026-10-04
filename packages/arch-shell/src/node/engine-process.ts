@@ -1,8 +1,8 @@
 import { connect, Socket } from 'node:net';
 import { accessSync, constants, existsSync, realpathSync, unlinkSync } from 'node:fs';
 import { delimiter, join } from 'node:path';
-import { SocketEnv, socketPathFor } from '@tau-rs/arch-client';
-import { EngineState, EngineStatus } from '../common/engine-protocol';
+import { schemaCompatibility, SocketEnv, socketPathFor } from '@tau-rs/arch-client';
+import { COMPATIBILITY_NOTE, EngineState, EngineStatus } from '../common/engine-protocol';
 
 /**
  * The engine host's core (seed design, choice 5), free of Theia so it is tested against the fake
@@ -240,7 +240,9 @@ export class EngineProcess {
                     this.set({ state: 'failed', detail: `initialize refused: ${msg.error.message}` });
                     done(false);
                 } else {
-                    this.set({ state: 'ready', attached, engineVersion: msg.result?.engineVersion, schemaVersion: msg.result?.schemaVersion, clientSchemaVersion: this.o.clientSchemaVersion });
+                    const schemaVersion = msg.result?.schemaVersion;
+                    const compatibility = schemaCompatibility(this.o.clientSchemaVersion, schemaVersion);
+                    this.set({ state: 'ready', attached, engineVersion: msg.result?.engineVersion, schemaVersion, clientSchemaVersion: this.o.clientSchemaVersion, compatibility, detail: COMPATIBILITY_NOTE[compatibility] });
                     done(true);
                 }
                 continue;
