@@ -1,10 +1,10 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { mkdtempSync, writeFileSync, chmodSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, chmodSync, realpathSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { loadState, startFakeEngine } from '@tau-rs/arch-fixtures-loader';
-import { EngineProcess, nodeSpawner, resolveBinary } from './engine-process';
+import { EngineProcess, nodeSpawner, resolveBinary, socketPathForRoot } from './engine-process';
 import { EngineStatus } from '../common/engine-protocol';
 
 const loaderDir = resolve(__dirname, '..', '..', '..', 'arch-fixtures-loader');
@@ -18,6 +18,18 @@ const fakeArch = (dir: string, body?: string): string => {
     chmodSync(p, 0o755);
     return p;
 };
+
+test('a root reached through a symlink gets the socket of its real path, as the engine hashes getcwd() (ADR 0034 §2)', () => {
+    const real = realpathSync(tmp());
+    const link = join(tmp(), 'link');
+    symlinkSync(real, link);
+    const env = { platform: 'darwin', uid: 501 };
+    assert.equal(socketPathForRoot(link, env), socketPathForRoot(real, env));
+    assert.equal(socketPathForRoot(`${link}/`, env), socketPathForRoot(real, env));
+    // on macOS tmpdir() itself goes through /var → /private/var
+    assert.equal(socketPathForRoot(tmpdir(), env), socketPathForRoot(realpathSync(tmpdir()), env));
+    assert.equal(socketPathForRoot('/no/such/root', env), socketPathForRoot('/no/such/root/', env));
+});
 
 test('discovery: preference → ARCH_BIN → PATH → bundled, and the list of where it looked', () => {
     const dir = tmp();

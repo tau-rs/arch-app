@@ -1,6 +1,7 @@
 import { connect, Socket } from 'node:net';
-import { accessSync, constants, existsSync, unlinkSync } from 'node:fs';
+import { accessSync, constants, existsSync, realpathSync, unlinkSync } from 'node:fs';
 import { delimiter, join } from 'node:path';
+import { SocketEnv, socketPathFor } from '@tau-rs/arch-client';
 import { EngineState, EngineStatus } from '../common/engine-protocol';
 
 /**
@@ -75,6 +76,16 @@ export const resolveBinary = (d: Discovery): Resolved | { looked: string[] } => 
     }
     if (!looked.some(l => l.startsWith('path:'))) { looked.push(`path: no arch in ${dirs.length} directories`); }
     return tryOne(d.bundled, 'bundled') ?? { looked };
+};
+
+/**
+ * The engine hashes getcwd(), which is the physical path (ADR 0034 §2): resolve symlinks first, so
+ * a root like /tmp/x on macOS (/tmp → /private/tmp) lands on the engine's socket, not a sibling.
+ */
+export const socketPathForRoot = (repoRoot: string, env: SocketEnv): string => {
+    let real = repoRoot;
+    try { real = realpathSync(repoRoot); } catch { /* a missing root: the spawn fails on it and says so */ }
+    return socketPathFor(real, env);
 };
 
 export interface SpawnedProcess {
