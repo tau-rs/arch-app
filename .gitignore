@@ -10,6 +10,8 @@ applications/*/.theia/
 applications/*/dist/
 applications/*/plugins/
 .browser_modules/
+# lerna (nx) task cache
+.nx/
 # synced external inputs (pinned by lock files)
 packages/arch-fixtures-loader/fixtures-for-ui/
 packages/arch-client/schema/arch-api.json
